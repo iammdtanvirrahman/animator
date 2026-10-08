@@ -233,3 +233,75 @@ S.i=cl(S.i|0,0,S.l.length-1);fit();ui(1);
  vp.addEventListener('pointerup',e=>{if(activeMode==='vertex'||activeMode==='weight'||activeMode==='sculpt'){lastP=null;ui(1);e.stopImmediatePropagation()}},true);
  setModeX('object');
 })();
+
+
+/* Blender-style Ctrl+Tab mode pie + full mode dropdown */
+(function(){
+  const pie=document.getElementById('modePie');
+  if(!pie)return;
+  const modeNames={object:'Object Mode',edit:'Edit Mode',draw:'Draw Mode',sculpt:'Sculpt Mode',vertex:'Vertex Paint',weight:'Weight Paint'};
+  let pieOpen=false;
+
+  function applyMode(m){
+    if(typeof window.setBlenderMode==='function') window.setBlenderMode(m);
+    else if(typeof window.setMode==='function') window.setMode(m);
+    modeSelect.value=m;
+    pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===m));
+  }
+  function openPie(){
+    pieOpen=true;
+    pie.classList.add('open');
+    pie.setAttribute('aria-hidden','false');
+    applyMode(mode);
+  }
+  function closePie(){
+    pieOpen=false;
+    pie.classList.remove('open');
+    pie.setAttribute('aria-hidden','true');
+  }
+  function togglePie(){pieOpen?closePie():openPie()}
+  window.openModePie=openPie;
+  window.closeModePie=closePie;
+
+  pie.querySelectorAll('[data-pie-mode]').forEach(b=>{
+    b.addEventListener('click',e=>{
+      e.stopPropagation();
+      applyMode(b.dataset.pieMode);
+      closePie();
+    });
+  });
+
+  document.addEventListener('keydown',e=>{
+    const target=e.target;
+    if(target && /^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName))return;
+    if(e.ctrlKey && e.key==='Tab'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      togglePie();
+      return;
+    }
+    if(pieOpen && e.key==='Escape'){
+      e.preventDefault();
+      closePie();
+    }
+  },true);
+
+  document.addEventListener('pointerdown',e=>{
+    if(pieOpen && !pie.contains(e.target))closePie();
+  });
+
+  modeSelect.addEventListener('change',()=>{
+    const m=modeSelect.value;
+    if(typeof window.setBlenderMode==='function')window.setBlenderMode(m);
+    pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===m));
+  });
+
+  const originalSet=window.setBlenderMode;
+  if(originalSet){
+    window.setBlenderMode=function(m){
+      originalSet(m);
+      modeSelect.value=m;
+      pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===m));
+    };
+  }
+})();
