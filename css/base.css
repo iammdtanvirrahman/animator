@@ -198,7 +198,7 @@ input[type=color]{border-color:#505157!important}
 @media(max-width:700px){
   #modeSelect{min-width:112px}
   #modePie::before{left:-108px;top:-108px;width:216px;height:216px}
-  #modePie .pieTop{top:-104px}.#modePie .pieBottom{top:66px}
+  #modePie .pieTop{top:-104px}#modePie .pieBottom{top:66px}
   #modePie .pieTR{left:42px}.#modePie .pieBR{left:42px}
   #modePie .pieBL{left:-134px}.#modePie .pieTL{left:-134px}
 }
