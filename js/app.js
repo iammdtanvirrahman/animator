@@ -202,6 +202,29 @@ S.i=cl(S.i|0,0,S.l.length-1);fit();ui(1);
  addEventListener('keydown',e=>{const T=e.target;if(T&&(T.tagName==='INPUT'||T.tagName==='SELECT'||T.tagName==='TEXTAREA'))return;const k=e.key.toLowerCase();if(k==='i'&&e.shiftKey){e.preventDefault();insertBlank()}else if(k==='d'&&e.shiftKey){e.preventDefault();duplicateDrawing()}});
  updatePhase2();
 })();
+/* Object Mode dedicated workspace */
+(function(){
+ const page=document.getElementById('objectModePage'), out=document.getElementById('objectTransform');
+ if(!page)return;
+ function renderObjectPage(){
+   const active=window.getBlenderMode?window.getBlenderMode():'object';
+   document.body.classList.toggle('object-mode',active==='object');
+   const L=S.l&&S.l[S.i], t=L?ev(L,S.f):{x:0,y:0,r:0,s:1,o:1};
+   if(out)out.innerHTML=L?'<label>X<input data-op="x" type="number" step="1" value="'+t.x.toFixed(1)+'"></label><label>Y<input data-op="y" type="number" step="1" value="'+t.y.toFixed(1)+'"></label><label>Rotation<input data-op="r" type="number" step="1" value="'+t.r.toFixed(1)+'"></label><label>Scale<input data-op="s" type="number" step=".01" value="'+t.s.toFixed(2)+'"></label>':'';
+   if(out&&L)out.querySelectorAll('[data-op]').forEach(inp=>inp.onchange=()=>{const key=inp.dataset.op,val=+inp.value;if(!Number.isFinite(val))return;snap();L.k[S.f]={...ev(L,S.f),[key]:key==='s'?Math.max(.01,val):val};ui(1);msg('Object transform updated')});
+ }
+ page.querySelectorAll('[data-object-tool]').forEach(b=>b.onclick=()=>{
+   const a=b.dataset.objectTool;
+   if(a==='select'){tool='select';mode='object';selectedObject=null;ui();msg('Object Select')}
+   else if(a==='move'){startMo('g')}
+   else if(a==='rotate'){startMo('r')}
+   else if(a==='scale'){startMo('s')}
+   else if(a==='duplicate'&&typeof duplicateDrawing==='function'){duplicateDrawing()}
+   else if(a==='delete'&&typeof deleteSelected==='function'){deleteSelected()}
+ });
+ const oldUI=ui;ui=function(full){oldUI(full);renderObjectPage()};
+ renderObjectPage();
+})();
 /* Blender-style mode system */
 (function(){
  const dock=document.getElementById('modeDock'),ws=document.getElementById('modeWorkspace'),badge=document.getElementById('modeBadge'),sel=document.getElementById('modeSelect');
