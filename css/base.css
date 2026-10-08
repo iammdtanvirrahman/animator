@@ -202,3 +202,16 @@ input[type=color]{border-color:#505157!important}
   #modePie .pieTR{left:42px}.#modePie .pieBR{left:42px}
   #modePie .pieBL{left:-134px}.#modePie .pieTL{left:-134px}
 }
+
+/* Object Mode workspace — Blender-inspired, integrated into the properties editor */
+.modePage{display:none;margin:0 -2px 12px;padding:0 0 10px;border-bottom:1px solid #3c3d41}
+.modePageTitle{display:flex;justify-content:space-between;align-items:center;margin:-1px 0 7px;padding:7px 8px;background:#34353a;border:1px solid #45464a;border-radius:3px;color:#e7e7e8}
+.modePageTitle b{font-size:11px}.modePageTitle span{font:9px ui-monospace,monospace;color:#8fba8f}
+.objectToolGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px}
+.objectToolGrid button{min-height:28px;font-size:10px;padding:4px 3px}
+.objectToolGrid button.active{background:#f08018;border-color:#ff9c3a;color:#1e1f22;font-weight:700}
+.modePageHint{margin-top:8px;padding:7px 8px;background:#222326;border:1px solid #3d3e42;border-radius:3px;color:#9fa2a8;font-size:9px;line-height:1.5}
+#objectTransform{grid-template-columns:1fr 1fr}
+body.object-mode #objectModePage{display:block}
+body.object-mode #sd>.modePage~h4:first-of-type{margin-top:10px}
+@media(max-width:480px){.modePageTitle{padding:6px}.objectToolGrid button{font-size:9px}.modePageHint{font-size:8px}}
