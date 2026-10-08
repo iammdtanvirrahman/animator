@@ -177,3 +177,28 @@ input[type=color]{border-color:#505157!important}
 #paintControls{display:grid;grid-template-columns:1fr 1fr;gap:5px}.paintSwatch{height:28px;width:100%;border:1px solid #505157;border-radius:3px;padding:2px}.weightBar{height:7px;border-radius:4px;background:linear-gradient(90deg,#222,#888,#fff);margin:8px 0 4px}.weightVal{display:flex;justify-content:space-between;color:#aaa;font:9px ui-monospace,monospace}
 @media(max-width:760px){#modeDock{left:4px;top:4px;max-width:calc(100% - 8px);overflow:auto}#modeDock button{font-size:9px;padding:3px 6px}#modeWorkspace{right:4px;top:42px;width:184px}}
 @media(max-width:480px){#modeDock button{min-width:28px;font-size:0}.mwBody{padding:6px}}
+
+
+/* Blender-style mode switching */
+#modeSelect{min-width:138px;font-weight:700;cursor:pointer}
+#modeDock button{font-weight:700}
+#modeDock button.on{box-shadow:inset 0 -2px 0 #f08a24,0 0 0 1px #f08a2438}
+#modePie{position:absolute;z-index:80;left:50%;top:50%;width:0;height:0;display:none;pointer-events:none}
+#modePie.open{display:block}
+#modePie::before{content:"";position:absolute;left:-126px;top:-126px;width:252px;height:252px;border-radius:50%;background:radial-gradient(circle,#242424 0 25%,#151515 26% 63%,#101010 64%);border:1px solid #4a4a4a;box-shadow:0 18px 60px #000b,0 0 0 1px #ffffff08;pointer-events:auto}
+#modePie .pieCenter{position:absolute;z-index:2;left:-34px;top:-20px;width:68px;height:40px;display:grid;place-items:center;border-radius:999px;background:#252525;border:1px solid #555;color:#fff;font:700 10px system-ui;letter-spacing:.12em;pointer-events:none}
+#modePie .pieItem{position:absolute;z-index:3;width:92px;height:38px;border:1px solid #454545;border-radius:10px;background:#292929;color:#ddd;font:700 11px system-ui;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0007}
+#modePie .pieItem:hover,#modePie .pieItem.active{background:#3a3a3a;color:#fff;border-color:#f08a24;box-shadow:0 0 0 1px #f08a2444,0 6px 18px #0009}
+#modePie .pieTop{left:-46px;top:-118px}
+#modePie .pieTR{left:52px;top:-60px}
+#modePie .pieBR{left:52px;top:22px}
+#modePie .pieBottom{left:-46px;top:80px}
+#modePie .pieBL{left:-138px;top:22px}
+#modePie .pieTL{left:-138px;top:-60px}
+@media(max-width:700px){
+  #modeSelect{min-width:112px}
+  #modePie::before{left:-108px;top:-108px;width:216px;height:216px}
+  #modePie .pieTop{top:-104px}.#modePie .pieBottom{top:66px}
+  #modePie .pieTR{left:42px}.#modePie .pieBR{left:42px}
+  #modePie .pieBL{left:-134px}.#modePie .pieTL{left:-134px}
+}
