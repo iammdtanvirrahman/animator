@@ -204,104 +204,128 @@ S.i=cl(S.i|0,0,S.l.length-1);fit();ui(1);
 })();
 /* Blender-style mode system */
 (function(){
- const modes=['object','edit','draw','sculpt','vertex','weight'];
- const dock=document.getElementById('modeDock'),ws=document.getElementById('modeWorkspace'),badge=document.getElementById('modeBadge');
+ const dock=document.getElementById('modeDock'),ws=document.getElementById('modeWorkspace'),badge=document.getElementById('modeBadge'),sel=document.getElementById('modeSelect');
  const names={object:'Object',edit:'Edit',draw:'Draw',sculpt:'Sculpt',vertex:'Vertex Paint',weight:'Weight Paint'};
- let activeMode=mode||'object', sculptAction='grab', paintColor='#f08018', paintStrength=1, weightStrength=1, sculptRadius=45;
- const pointColor=(hex,a=1)=>{const n=parseInt(hex.slice(1),16);return [n>>16,(n>>8)&255,n&255,a]};
- function setModeX(m){activeMode=m;mode=m==='edit'?'edit':'object';badge.textContent=names[m];dock.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.blmode===m));ws.classList.add('on');['object','edit','draw','sculpt','vertex','weight'].forEach(x=>{const el=document.getElementById(x+'WS');if(el)el.style.display=x===m?'block':'none'});
-   if(m==='draw'){tool='draw'} else if(m==='sculpt'){tool='select'} else if(m==='vertex'||m==='weight'){tool='select'} else if(m==='edit'){tool='select'} else tool='select';
-   if(typeof ui==='function')ui(); if(typeof msg==='function')msg(names[m]+' Mode');
+ const modes=Object.keys(names);
+ let activeMode=(typeof mode!=='undefined'&&mode==='edit')?'edit':'object';
+ let sculptAction='grab',paintColor='#f08018',paintStrength=1,weightStrength=1,sculptRadius=45,lastP=null;
+
+ function refreshModeUI(){
+   if(sel)sel.value=activeMode;
+   if(badge)badge.textContent=names[activeMode];
+   if(dock)dock.querySelectorAll('[data-blmode]').forEach(b=>b.classList.toggle('on',b.dataset.blmode===activeMode));
+   modes.forEach(x=>{const el=document.getElementById(x+'WS');if(el)el.style.display=x===activeMode?'block':'none'});
+   const pie=document.getElementById('modePie'); if(pie)pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===activeMode));
+ }
+ function setModeX(m){
+   if(!names[m])m='object';
+   activeMode=m;
+   // The original editor only needs object/edit in its core state.
+   mode=(m==='edit')?'edit':'object';
+   if(m==='draw')tool='draw'; else tool='select';
+   refreshModeUI();
+   if(typeof ui==='function')ui();
+   if(typeof msg==='function')msg(names[m]+' Mode');
  }
  window.setBlenderMode=setModeX;
- dock.querySelectorAll('[data-blmode]').forEach(b=>b.onclick=()=>setModeX(b.dataset.blmode));
- const oldSM=window.setMode; window.setMode=function(m){setModeX(m==='edit'?'edit':'object')};
- modeSelect.addEventListener('change',()=>setModeX(modeSelect.value==='edit'?'edit':'object'));
- document.querySelectorAll('[data-mwtool]').forEach(b=>b.onclick=()=>{const t=b.dataset.mwtool;if(t==='select')tool='select';if(t==='draw')tool='draw';if(t==='line')tool='line';if(t==='box')tool='box';if(t==='oval')tool='oval';if(t==='pivot')tool='pivot';if(t==='duplicate'&&typeof duplicateDrawing==='function')duplicateDrawing();if(t==='delete'&&typeof deleteSelected==='function')deleteSelected();if(t==='mirror'&&typeof mirrorFrames==='function')mirrorFrames();ui()});
- document.querySelectorAll('[data-sculpt]').forEach(b=>b.onclick=()=>{sculptAction=b.dataset.sculpt;document.querySelectorAll('[data-sculpt]').forEach(x=>x.classList.toggle('on',x===b));if(typeof msg==='function')msg('Sculpt: '+sculptAction)});
- document.getElementById('sculptRadius').oninput=e=>sculptRadius=+e.target.value;
- document.getElementById('vertexColor').oninput=e=>paintColor=e.target.value;
- document.getElementById('vertexStrength').oninput=e=>paintStrength=+e.target.value;
- const wr=document.getElementById('weightStrength'),wv=document.getElementById('weightRead');wr.oninput=e=>{weightStrength=+e.target.value;wv.textContent=weightStrength.toFixed(2)};
- function activeStrokeAt(L,f,x,y){const d=L.d[f];if(!d)return null;let best=null,bd=1e9;for(const st of d){for(let j=0;j<st.p.length;j++){const p=st.p[j],dd=(p[0]-x)**2+(p[1]-y)**2;if(dd<bd){bd=dd;best={st,j}}}}return bd<=sculptRadius*sculptRadius?best:null}
- function paintStroke(L,f,x,y){const hit=activeStrokeAt(L,f,x,y);if(!hit)return;const st=hit.st;st.c=paintColor;st.a=paintStrength;st.w=st.w||2;R();ui()}
- function weightStroke(L,f,x,y){const hit=activeStrokeAt(L,f,x,y);if(!hit)return;hit.st.weights=hit.st.weights||hit.st.p.map(()=>0);const rr=sculptRadius;hit.st.p.forEach((p,i)=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<rr){const q=1-d/rr;hit.st.weights[i]=Math.max(0,Math.min(1,weightStrength*q+(1-q)*(hit.st.weights[i]||0)))}});R();ui()}
- function sculptStroke(L,f,x,y,dx,dy){const hit=activeStrokeAt(L,f,x,y);if(!hit)return;const st=hit.st,rr=sculptRadius;for(let i=0;i<st.p.length;i++){const p=st.p[i],d=Math.hypot(p[0]-x,p[1]-y);if(d>rr)continue;const q=1-d/rr;if(sculptAction==='smooth'&&i>0&&i<st.p.length-1){p[0]+=(st.p[i-1][0]+st.p[i+1][0]-2*p[0])*.18*q;p[1]+=(st.p[i-1][1]+st.p[i+1][1]-2*p[1])*.18*q}else if(sculptAction==='grab'){p[0]+=dx*q;p[1]+=dy*q}else if(sculptAction==='push'){p[0]+=dx*q;p[1]+=dy*q}else if(sculptAction==='erase'){p[0]+=(p[0]-x)*.08*q;p[1]+=(p[1]-y)*.08*q}}R()}
- let lastP=null;
- vp.addEventListener('pointerdown',e=>{if(activeMode==='vertex'||activeMode==='weight'||activeMode==='sculpt'){const p=pt(e);lastP=p;snap();e.stopImmediatePropagation()}},true);
- vp.addEventListener('pointermove',e=>{if(!(e.buttons&1)||!lastP)return;const p=pt(e),L=S.l[S.i];if(activeMode==='vertex')paintStroke(L,S.f,p[0],p[1]);if(activeMode==='weight')weightStroke(L,S.f,p[0],p[1]);if(activeMode==='sculpt')sculptStroke(L,S.f,p[0],p[1],p[0]-lastP[0],p[1]-lastP[1]);lastP=p;e.stopImmediatePropagation()},true);
- vp.addEventListener('pointerup',e=>{if(activeMode==='vertex'||activeMode==='weight'||activeMode==='sculpt'){lastP=null;ui(1);e.stopImmediatePropagation()}},true);
- setModeX('object');
+ window.getBlenderMode=()=>activeMode;
+ if(dock)dock.querySelectorAll('[data-blmode]').forEach(b=>b.onclick=()=>setModeX(b.dataset.blmode));
+ if(sel)sel.addEventListener('change',()=>setModeX(sel.value));
+ document.querySelectorAll('[data-mwtool]').forEach(b=>b.onclick=()=>{
+   const t=b.dataset.mwtool;
+   if(t==='select')tool='select'; else if(t==='draw')tool='draw'; else if(t==='line')tool='line'; else if(t==='box')tool='box'; else if(t==='oval')tool='oval'; else if(t==='pivot')tool='pivot';
+   else if(t==='duplicate'&&typeof duplicateDrawing==='function')duplicateDrawing();
+   else if(t==='delete'&&typeof deleteSelected==='function')deleteSelected();
+   else if(t==='mirror'&&typeof mirrorFrames==='function')mirrorFrames();
+   if(typeof ui==='function')ui();
+ });
+ document.querySelectorAll('[data-sculpt]').forEach(b=>b.onclick=()=>{
+   sculptAction=b.dataset.sculpt;
+   document.querySelectorAll('[data-sculpt]').forEach(x=>x.classList.toggle('on',x===b));
+   if(typeof msg==='function')msg('Sculpt: '+sculptAction);
+ });
+ const sr=document.getElementById('sculptRadius'); if(sr)sr.oninput=e=>sculptRadius=+e.target.value;
+ const vc=document.getElementById('vertexColor'); if(vc)vc.oninput=e=>paintColor=e.target.value;
+ const vs=document.getElementById('vertexStrength'); if(vs)vs.oninput=e=>paintStrength=+e.target.value;
+ const wr=document.getElementById('weightStrength'),wv=document.getElementById('weightRead');
+ if(wr)wr.oninput=e=>{weightStrength=+e.target.value;if(wv)wv.textContent=weightStrength.toFixed(2)};
+
+ function activeStrokeAt(L,f,x,y){
+   const d=L&&L.d[f];if(!d)return null;
+   let best=null,bd=Infinity;
+   for(const st of d)for(let j=0;j<st.p.length;j++){const p=st.p[j],dd=(p[0]-x)**2+(p[1]-y)**2;if(dd<bd){bd=dd;best={st,j}}}
+   return bd<=sculptRadius*sculptRadius?best:null;
+ }
+ function paintStroke(L,f,x,y){
+   const hit=activeStrokeAt(L,f,x,y);if(!hit)return;
+   hit.st.c=paintColor;hit.st.a=paintStrength;
+   if(typeof R==='function')R();
+ }
+ function weightStroke(L,f,x,y){
+   const hit=activeStrokeAt(L,f,x,y);if(!hit)return;
+   hit.st.weights=hit.st.weights||hit.st.p.map(()=>0);
+   const rr=sculptRadius;
+   hit.st.p.forEach((p,i)=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<rr){const q=1-d/rr;hit.st.weights[i]=Math.max(0,Math.min(1,weightStrength*q+(1-q)*(hit.st.weights[i]||0)))});
+   if(typeof R==='function')R();
+ }
+ function sculptStroke(L,f,x,y,dx,dy){
+   const hit=activeStrokeAt(L,f,x,y);if(!hit)return;
+   const st=hit.st,rr=sculptRadius;
+   for(let i=0;i<st.p.length;i++){
+     const p=st.p[i],d=Math.hypot(p[0]-x,p[1]-y);if(d>rr)continue;
+     const q=1-d/rr;
+     if(sculptAction==='smooth'&&i>0&&i<st.p.length-1){
+       p[0]+=(st.p[i-1][0]+st.p[i+1][0]-2*p[0])*.18*q;
+       p[1]+=(st.p[i-1][1]+st.p[i+1][1]-2*p[1])*.18*q;
+     }else if(sculptAction==='grab'||sculptAction==='push'){
+       p[0]+=dx*q;p[1]+=dy*q;
+     }else if(sculptAction==='erase'){
+       p[0]+=(p[0]-x)*.08*q;p[1]+=(p[1]-y)*.08*q;
+     }
+   }
+   if(typeof R==='function')R();
+ }
+ vp.addEventListener('pointerdown',e=>{
+   if(activeMode!=='vertex'&&activeMode!=='weight'&&activeMode!=='sculpt')return;
+   const p=pt(e);lastP=p;snap();e.stopImmediatePropagation();
+ },true);
+ vp.addEventListener('pointermove',e=>{
+   if(!lastP||!(e.buttons&1))return;
+   if(activeMode!=='vertex'&&activeMode!=='weight'&&activeMode!=='sculpt'){lastP=null;return}
+   const p=pt(e),L=S.l[S.i];
+   if(activeMode==='vertex')paintStroke(L,S.f,p[0],p[1]);
+   else if(activeMode==='weight')weightStroke(L,S.f,p[0],p[1]);
+   else sculptStroke(L,S.f,p[0],p[1],p[0]-lastP[0],p[1]-lastP[1]);
+   lastP=p;e.stopImmediatePropagation();
+ },true);
+ vp.addEventListener('pointerup',e=>{
+   if(lastP){lastP=null;if(typeof ui==='function')ui(1);e.stopImmediatePropagation()}
+ },true);
+ setModeX(activeMode);
 })();
 
-
-/* Blender-style Ctrl+Tab mode pie + full mode dropdown */
+/* Blender-style Ctrl+Tab mode pie */
 (function(){
-  const pie=document.getElementById('modePie');
-  if(!pie)return;
-  const modeNames={object:'Object Mode',edit:'Edit Mode',draw:'Draw Mode',sculpt:'Sculpt Mode',vertex:'Vertex Paint',weight:'Weight Paint'};
-  let pieOpen=false;
-
-  function applyMode(m){
-    if(typeof window.setBlenderMode==='function') window.setBlenderMode(m);
-    else if(typeof window.setMode==='function') window.setMode(m);
-    modeSelect.value=m;
-    pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===m));
-  }
-  function openPie(){
-    pieOpen=true;
-    pie.classList.add('open');
-    pie.setAttribute('aria-hidden','false');
-    applyMode(mode);
-  }
-  function closePie(){
-    pieOpen=false;
-    pie.classList.remove('open');
-    pie.setAttribute('aria-hidden','true');
-  }
-  function togglePie(){pieOpen?closePie():openPie()}
-  window.openModePie=openPie;
-  window.closeModePie=closePie;
-
-  pie.querySelectorAll('[data-pie-mode]').forEach(b=>{
-    b.addEventListener('click',e=>{
-      e.stopPropagation();
-      applyMode(b.dataset.pieMode);
-      closePie();
-    });
-  });
-
-  document.addEventListener('keydown',e=>{
-    const target=e.target;
-    if(target && /^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName))return;
-    if(e.ctrlKey && e.key==='Tab'){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      togglePie();
-      return;
-    }
-    if(pieOpen && e.key==='Escape'){
-      e.preventDefault();
-      closePie();
-    }
-  },true);
-
-  document.addEventListener('pointerdown',e=>{
-    if(pieOpen && !pie.contains(e.target))closePie();
-  });
-
-  modeSelect.addEventListener('change',()=>{
-    const m=modeSelect.value;
-    if(typeof window.setBlenderMode==='function')window.setBlenderMode(m);
-    pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===m));
-  });
-
-  const originalSet=window.setBlenderMode;
-  if(originalSet){
-    window.setBlenderMode=function(m){
-      originalSet(m);
-      modeSelect.value=m;
-      pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===m));
-    };
-  }
+ const pie=document.getElementById('modePie'),sel=document.getElementById('modeSelect');
+ if(!pie)return;
+ let open=false;
+ function sync(){
+   const m=typeof window.getBlenderMode==='function'?window.getBlenderMode():'object';
+   if(sel)sel.value=m;
+   pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.classList.toggle('active',b.dataset.pieMode===m));
+ }
+ function close(){open=false;pie.classList.remove('open');pie.setAttribute('aria-hidden','true');sync()}
+ function show(){open=true;pie.classList.add('open');pie.setAttribute('aria-hidden','false');sync()}
+ window.openModePie=show;window.closeModePie=close;
+ pie.querySelectorAll('[data-pie-mode]').forEach(b=>b.addEventListener('click',e=>{
+   e.stopPropagation();
+   if(typeof window.setBlenderMode==='function')window.setBlenderMode(b.dataset.pieMode);
+   close();
+ }));
+ document.addEventListener('keydown',e=>{
+   if(e.ctrlKey&&e.key==='Tab'){e.preventDefault();e.stopImmediatePropagation();open?close():show();return}
+   if(open&&e.key==='Escape'){e.preventDefault();close()}
+ },true);
+ document.addEventListener('pointerdown',e=>{if(open&&!pie.contains(e.target))close()});
+ sync();
 })();
