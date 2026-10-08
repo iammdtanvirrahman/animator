@@ -215,3 +215,7 @@ input[type=color]{border-color:#505157!important}
 body.object-mode #objectModePage{display:block}
 body.object-mode #sd>.modePage~h4:first-of-type{margin-top:10px}
 @media(max-width:480px){.modePageTitle{padding:6px}.objectToolGrid button{font-size:9px}.modePageHint{font-size:8px}}
+
+/* Edit Mode workspace */
+body.edit-mode #editModePage{display:block}
+#editModeStats{font:9px ui-monospace,monospace;color:#f0a45e}
