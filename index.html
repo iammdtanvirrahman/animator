@@ -170,10 +170,29 @@ input[type=color]{border-color:#505157!important}
 #fpsPresets{display:flex;gap:3px}#fpsPresets button{flex:1;font-size:9px;padding:3px 1px}
 #exposureRead{font:10px ui-monospace,monospace;color:#9fa2a8;margin-top:4px}
 #timelineInfo{margin-left:auto;color:#999da4;font:10px ui-monospace,monospace}
-@media(max-width:480px){#animOps button{font-size:9px}#keyList{max-height:70px}}</style></head><body><div id="app">
+@media(max-width:480px){#animOps button{font-size:9px}#keyList{max-height:70px}}
+/* Blender-style mode workspaces */
+#modeDock{position:absolute;left:8px;top:8px;z-index:8;display:flex;gap:4px;padding:4px;background:#292a2dcc;border:1px solid #4a4b50;border-radius:5px;box-shadow:0 5px 18px #0007;backdrop-filter:blur(8px)}
+#modeDock button{font-size:10px;min-height:24px;padding:3px 8px;border-radius:3px;background:#383a3f;border:1px solid #494b50;color:#d9dadd}#modeDock button.on{background:#f08018;color:#191a1c;border-color:#ff9c3a;font-weight:700}
+#modeWorkspace{position:absolute;right:8px;top:8px;width:210px;z-index:7;display:none;background:#292a2de8;border:1px solid #47484d;border-radius:5px;box-shadow:0 8px 24px #0009;backdrop-filter:blur(8px);overflow:hidden}
+#modeWorkspace.on{display:block}.mwHead{padding:7px 9px;background:#34353a;border-bottom:1px solid #45464a;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.6px}.mwBody{padding:8px}.mwGrid{display:grid;grid-template-columns:1fr 1fr;gap:5px}.mwBtn{width:100%;font-size:10px!important;padding:5px 4px!important}.mwHint{margin-top:7px;color:#a5a7ad;font-size:9px;line-height:1.45}.modeBadge{color:#f08a24;font-weight:700}
+#paintControls{display:grid;grid-template-columns:1fr 1fr;gap:5px}.paintSwatch{height:28px;width:100%;border:1px solid #505157;border-radius:3px;padding:2px}.weightBar{height:7px;border-radius:4px;background:linear-gradient(90deg,#222,#888,#fff);margin:8px 0 4px}.weightVal{display:flex;justify-content:space-between;color:#aaa;font:9px ui-monospace,monospace}
+@media(max-width:760px){#modeDock{left:4px;top:4px;max-width:calc(100% - 8px);overflow:auto}#modeDock button{font-size:9px;padding:3px 6px}#modeWorkspace{right:4px;top:42px;width:184px}}
+@media(max-width:480px){#modeDock button{min-width:28px;font-size:0}.mwBody{padding:6px}}
+</style></head><body><div id="app">
 <header id="hd"><b class="lg">Keyframe</b><div id="studioMenu"><div class="menuWrap"><button class="menuBtn" data-menu="file">File</button><div class="menuPop"><div class="menuItem" data-action="new">New <kbd>Ctrl+N</kbd></div><div class="menuItem" data-action="save">Save Project <kbd>Ctrl+S</kbd></div><div class="menuItem" data-action="open">Open Project <kbd>Ctrl+O</kbd></div></div></div><div class="menuWrap"><button class="menuBtn" data-menu="edit">Edit</button><div class="menuPop"><div class="menuItem" data-action="undo">Undo <kbd>Ctrl+Z</kbd></div><div class="menuItem" data-action="redo">Redo <kbd>Ctrl+Shift+Z</kbd></div><div class="menuItem" data-action="duplicate">Duplicate <kbd>Ctrl+D</kbd></div></div></div><div class="menuWrap"><button class="menuBtn" data-menu="view">View</button><div class="menuPop"><div class="menuItem" data-action="grid">Toggle Grid</div><div class="menuItem" data-action="center">Frame All <kbd>Home</kbd></div><div class="menuItem" data-action="cross">Center Guides</div></div></div></div><select id="modeSelect" title="Choose editor mode (Tab toggles modes)"><option value="object">Object Mode</option><option value="edit">Edit Mode</option></select><i></i><button id="bn">New</button><button id="bs">Save</button><button id="bo">Open</button><input id="ld" type="file" accept=".json" hidden><i></i><button id="bu">Undo</button><button id="br">Redo</button><i></i><button id="bp">PNG</button><button id="bw">WebM</button><i></i><button id="bh">Keys ?</button><span id="sx"></span></header>
 <div id="mid"><nav id="tb"></nav>
-<div id="vp"><div id="crosshair"></div><div id="statusbar"><span id="coordRead">X 0 · Y 0</span><span id="zoomRead">100%</span><span id="frameRead">F 1</span></div><canvas id="cv" width="960" height="540"></canvas><pre id="hp" hidden>Space play   ←/→ frame   ↑/↓ prev/next key   Shift+←/→ start/end
+<div id="vp"><div id="modeDock" aria-label="Blender modes">
+<button data-blmode="object">Object</button><button data-blmode="edit">Edit</button><button data-blmode="draw">Draw</button><button data-blmode="sculpt">Sculpt</button><button data-blmode="vertex">Vertex</button><button data-blmode="weight">Weight</button>
+</div>
+<div id="modeWorkspace"><div class="mwHead">Mode <span id="modeBadge" class="modeBadge">Object</span></div><div class="mwBody">
+<div id="objectWS"><div class="mwGrid"><button class="mwBtn" data-mwtool="select">Select / Move</button><button class="mwBtn" data-mwtool="pivot">Set Pivot</button><button class="mwBtn" data-mwtool="duplicate">Duplicate</button><button class="mwBtn" data-mwtool="delete">Delete</button></div><div class="mwHint">Object mode: select complete strokes and transform the active object.</div></div>
+<div id="editWS"><div class="mwGrid"><button class="mwBtn" data-mwtool="select">Select Points</button><button class="mwBtn" data-mwtool="draw">Add Stroke</button><button class="mwBtn" data-mwtool="mirror">Mirror</button><button class="mwBtn" data-mwtool="delete">Delete</button></div><div class="mwHint">Edit mode: edit the active drawing without changing layer transforms.</div></div>
+<div id="drawWS"><div class="mwGrid"><button class="mwBtn" data-mwtool="draw">Pencil</button><button class="mwBtn" data-mwtool="line">Line</button><button class="mwBtn" data-mwtool="box">Rectangle</button><button class="mwBtn" data-mwtool="oval">Ellipse</button></div><div class="mwHint">Draw mode: frame-by-frame Grease Pencil style drawing.</div></div>
+<div id="sculptWS"><div class="mwGrid"><button class="mwBtn" data-sculpt="smooth">Smooth</button><button class="mwBtn" data-sculpt="grab">Grab</button><button class="mwBtn" data-sculpt="push">Push</button><button class="mwBtn" data-sculpt="erase">Erase</button></div><label>Radius<input id="sculptRadius" type="range" min="5" max="180" value="45"></label><div class="mwHint">Sculpt mode edits stroke points locally. Drag over a stroke to reshape it.</div></div>
+<div id="vertexWS"><div id="paintControls"><label>Color<input id="vertexColor" class="paintSwatch" type="color" value="#f08018"></label><label>Strength<input id="vertexStrength" type="range" min="0" max="1" step=".01" value="1"></label></div><div class="mwHint">Vertex Paint: paint the selected stroke's points with a color. Works per drawing frame.</div></div>
+<div id="weightWS"><label>Weight<input id="weightStrength" type="range" min="0" max="1" step=".01" value="1"></label><div class="weightBar"></div><div class="weightVal"><span>0</span><b id="weightRead">1.00</b><span>1</span></div><div class="mwHint">Weight Paint: assign point weights for future deformation tools. Weight data is stored in the project.</div></div>
+</div></div><div id="crosshair"></div><div id="statusbar"><span id="coordRead">X 0 · Y 0</span><span id="zoomRead">100%</span><span id="frameRead">F 1</span></div><canvas id="cv" width="960" height="540"></canvas><pre id="hp" hidden>Space play   ←/→ frame   ↑/↓ prev/next key   Shift+←/→ start/end
 Object: V select/move stroke · Edit: drag control points · Tab switch mode · Delete selected stroke
 D draw  E erase  L line  B box  O ellipse  P pivot
 Drag preview to move · edge/corner handles resize freely · drag top handle to rotate · wheel / [ ] scale
@@ -406,4 +425,36 @@ S.i=cl(S.i|0,0,S.l.length-1);fit();ui(1);
  const oldPlay=play; /* keep existing playback engine; controls remain model-compatible */
  addEventListener('keydown',e=>{const T=e.target;if(T&&(T.tagName==='INPUT'||T.tagName==='SELECT'||T.tagName==='TEXTAREA'))return;const k=e.key.toLowerCase();if(k==='i'&&e.shiftKey){e.preventDefault();insertBlank()}else if(k==='d'&&e.shiftKey){e.preventDefault();duplicateDrawing()}});
  updatePhase2();
-})();</script></body></html>
+})();
+/* Blender-style mode system */
+(function(){
+ const modes=['object','edit','draw','sculpt','vertex','weight'];
+ const dock=document.getElementById('modeDock'),ws=document.getElementById('modeWorkspace'),badge=document.getElementById('modeBadge');
+ const names={object:'Object',edit:'Edit',draw:'Draw',sculpt:'Sculpt',vertex:'Vertex Paint',weight:'Weight Paint'};
+ let activeMode=mode||'object', sculptAction='grab', paintColor='#f08018', paintStrength=1, weightStrength=1, sculptRadius=45;
+ const pointColor=(hex,a=1)=>{const n=parseInt(hex.slice(1),16);return [n>>16,(n>>8)&255,n&255,a]};
+ function setModeX(m){activeMode=m;mode=m==='edit'?'edit':'object';badge.textContent=names[m];dock.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.blmode===m));ws.classList.add('on');['object','edit','draw','sculpt','vertex','weight'].forEach(x=>{const el=document.getElementById(x+'WS');if(el)el.style.display=x===m?'block':'none'});
+   if(m==='draw'){tool='draw'} else if(m==='sculpt'){tool='select'} else if(m==='vertex'||m==='weight'){tool='select'} else if(m==='edit'){tool='select'} else tool='select';
+   if(typeof ui==='function')ui(); if(typeof msg==='function')msg(names[m]+' Mode');
+ }
+ window.setBlenderMode=setModeX;
+ dock.querySelectorAll('[data-blmode]').forEach(b=>b.onclick=()=>setModeX(b.dataset.blmode));
+ const oldSM=window.setMode; window.setMode=function(m){setModeX(m==='edit'?'edit':'object')};
+ modeSelect.addEventListener('change',()=>setModeX(modeSelect.value==='edit'?'edit':'object'));
+ document.querySelectorAll('[data-mwtool]').forEach(b=>b.onclick=()=>{const t=b.dataset.mwtool;if(t==='select')tool='select';if(t==='draw')tool='draw';if(t==='line')tool='line';if(t==='box')tool='box';if(t==='oval')tool='oval';if(t==='pivot')tool='pivot';if(t==='duplicate'&&typeof duplicateDrawing==='function')duplicateDrawing();if(t==='delete'&&typeof deleteSelected==='function')deleteSelected();if(t==='mirror'&&typeof mirrorFrames==='function')mirrorFrames();ui()});
+ document.querySelectorAll('[data-sculpt]').forEach(b=>b.onclick=()=>{sculptAction=b.dataset.sculpt;document.querySelectorAll('[data-sculpt]').forEach(x=>x.classList.toggle('on',x===b));if(typeof msg==='function')msg('Sculpt: '+sculptAction)});
+ document.getElementById('sculptRadius').oninput=e=>sculptRadius=+e.target.value;
+ document.getElementById('vertexColor').oninput=e=>paintColor=e.target.value;
+ document.getElementById('vertexStrength').oninput=e=>paintStrength=+e.target.value;
+ const wr=document.getElementById('weightStrength'),wv=document.getElementById('weightRead');wr.oninput=e=>{weightStrength=+e.target.value;wv.textContent=weightStrength.toFixed(2)};
+ function activeStrokeAt(L,f,x,y){const d=L.d[f];if(!d)return null;let best=null,bd=1e9;for(const st of d){for(let j=0;j<st.p.length;j++){const p=st.p[j],dd=(p[0]-x)**2+(p[1]-y)**2;if(dd<bd){bd=dd;best={st,j}}}}return bd<=sculptRadius*sculptRadius?best:null}
+ function paintStroke(L,f,x,y){const hit=activeStrokeAt(L,f,x,y);if(!hit)return;const st=hit.st;st.c=paintColor;st.a=paintStrength;st.w=st.w||2;R();ui()}
+ function weightStroke(L,f,x,y){const hit=activeStrokeAt(L,f,x,y);if(!hit)return;hit.st.weights=hit.st.weights||hit.st.p.map(()=>0);const rr=sculptRadius;hit.st.p.forEach((p,i)=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<rr){const q=1-d/rr;hit.st.weights[i]=Math.max(0,Math.min(1,weightStrength*q+(1-q)*(hit.st.weights[i]||0)))}});R();ui()}
+ function sculptStroke(L,f,x,y,dx,dy){const hit=activeStrokeAt(L,f,x,y);if(!hit)return;const st=hit.st,rr=sculptRadius;for(let i=0;i<st.p.length;i++){const p=st.p[i],d=Math.hypot(p[0]-x,p[1]-y);if(d>rr)continue;const q=1-d/rr;if(sculptAction==='smooth'&&i>0&&i<st.p.length-1){p[0]+=(st.p[i-1][0]+st.p[i+1][0]-2*p[0])*.18*q;p[1]+=(st.p[i-1][1]+st.p[i+1][1]-2*p[1])*.18*q}else if(sculptAction==='grab'){p[0]+=dx*q;p[1]+=dy*q}else if(sculptAction==='push'){p[0]+=dx*q;p[1]+=dy*q}else if(sculptAction==='erase'){p[0]+=(p[0]-x)*.08*q;p[1]+=(p[1]-y)*.08*q}}R()}
+ let lastP=null;
+ vp.addEventListener('pointerdown',e=>{if(activeMode==='vertex'||activeMode==='weight'||activeMode==='sculpt'){const p=pt(e);lastP=p;snap();e.stopImmediatePropagation()}},true);
+ vp.addEventListener('pointermove',e=>{if(!(e.buttons&1)||!lastP)return;const p=pt(e),L=S.l[S.i];if(activeMode==='vertex')paintStroke(L,S.f,p[0],p[1]);if(activeMode==='weight')weightStroke(L,S.f,p[0],p[1]);if(activeMode==='sculpt')sculptStroke(L,S.f,p[0],p[1],p[0]-lastP[0],p[1]-lastP[1]);lastP=p;e.stopImmediatePropagation()},true);
+ vp.addEventListener('pointerup',e=>{if(activeMode==='vertex'||activeMode==='weight'||activeMode==='sculpt'){lastP=null;ui(1);e.stopImmediatePropagation()}},true);
+ setModeX('object');
+})();
+</script></body></html>
