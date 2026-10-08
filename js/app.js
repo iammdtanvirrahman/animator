@@ -225,6 +225,13 @@ S.i=cl(S.i|0,0,S.l.length-1);fit();ui(1);
  const oldUI=ui;ui=function(full){oldUI(full);renderObjectPage()};
  renderObjectPage();
 })();
+/* Edit Mode dedicated workspace */
+(function(){
+ const page=document.getElementById('editModePage'),out=document.getElementById('editModeStats'); if(!page)return;
+ function render(){const L=S.l&&S.l[S.i],D=L?dr(L,S.f):[],sel=selectedObject&&selectedObject.s;document.body.classList.toggle('edit-mode',window.getBlenderMode&&window.getBlenderMode()==='edit');if(out)out.textContent=L?'Frame '+S.f+' · '+D.length+' stroke'+(D.length===1?'':'s')+' · '+(sel?sel.p.length:0)+' selected points':'No active layer'}
+ page.querySelectorAll('[data-edit-tool]').forEach(b=>b.onclick=()=>{const a=b.dataset.editTool;if(a==='select'){mode='edit';tool='select';selectedObject=null}else if(a==='draw'){mode='edit';tool='draw'}else if(a==='line'){mode='edit';tool='line'}else if(a==='box'){mode='edit';tool='box'}else if(a==='oval'){mode='edit';tool='oval'}else if(a==='mirror'&&typeof mirrorFrames==='function')mirrorFrames();else if(a==='delete'&&typeof deleteSelected==='function')deleteSelected();ui();msg('Edit: '+b.textContent.trim())});
+ const oldUI=ui;ui=function(full){oldUI(full);render()};render();
+})();
 /* Blender-style mode system */
 (function(){
  const dock=document.getElementById('modeDock'),ws=document.getElementById('modeWorkspace'),badge=document.getElementById('modeBadge'),sel=document.getElementById('modeSelect');
