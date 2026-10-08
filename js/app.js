@@ -265,7 +265,7 @@ S.i=cl(S.i|0,0,S.l.length-1);fit();ui(1);
    const hit=activeStrokeAt(L,f,x,y);if(!hit)return;
    hit.st.weights=hit.st.weights||hit.st.p.map(()=>0);
    const rr=sculptRadius;
-   hit.st.p.forEach((p,i)=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<rr){const q=1-d/rr;hit.st.weights[i]=Math.max(0,Math.min(1,weightStrength*q+(1-q)*(hit.st.weights[i]||0)))});
+   hit.st.p.forEach((p,i)=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<rr){const q=1-d/rr;hit.st.weights[i]=Math.max(0,Math.min(1,weightStrength*q+(1-q)*(hit.st.weights[i]||0)));}});
    if(typeof R==='function')R();
  }
  function sculptStroke(L,f,x,y,dx,dy){
