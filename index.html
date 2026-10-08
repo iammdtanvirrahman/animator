@@ -23,7 +23,17 @@ Drag selected cels to move   Ctrl+Z undo   Ctrl+Shift+Z redo
 Wheel zoom   Alt/Middle-drag pan   Home reset view</pre></div>
 <aside id="sd">
 <h4>Layers<span><button onclick="addL()" title="Add (Shift+A)">＋</button> <button onclick="delL()">－</button> <button onclick="mvL(1)">▲</button> <button onclick="mvL(-1)">▼</button></span></h4><div id="ll"></div>
-<h4>Transform at this frame</h4><div id="tf" class="g"></div><div id="objectModePage" class="modePage" aria-label="Object Mode workspace">
+<h4>Transform at this frame</h4><div id="tf" class="g"></div><div id="editModePage" class="modePage" aria-label="Edit Mode workspace">
+<h4>Edit Mode</h4><div class="modePageTitle"><b>Stroke & Point Editing</b><span id="editModeStats">—</span></div>
+<div class="objectToolGrid">
+<button data-edit-tool="select">↖ Select Points</button><button data-edit-tool="draw">✎ Add Stroke</button>
+<button data-edit-tool="line">╱ Line</button><button data-edit-tool="box">▭ Rectangle</button>
+<button data-edit-tool="oval">◯ Ellipse</button><button data-edit-tool="mirror">↔ Mirror</button>
+<button data-edit-tool="delete">X Delete Stroke</button>
+</div>
+<div class="modePageHint">Edit Mode changes the active drawing itself. Click or drag points to reshape strokes; layer transforms remain untouched.</div>
+</div>
+<div id="objectModePage" class="modePage" aria-label="Object Mode workspace">
 <h4>Object Mode</h4>
 <div class="modePageTitle"><b>Object</b><span id="objectModeState">Active</span></div>
 <div class="objectToolGrid">
