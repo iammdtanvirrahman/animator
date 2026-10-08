@@ -33,6 +33,28 @@ Wheel zoom   Alt/Middle-drag pan   Home reset view</pre></div>
 </div>
 <div class="modePageHint">Edit Mode changes the active drawing itself. Click or drag points to reshape strokes; layer transforms remain untouched.</div>
 </div>
+<div id="drawModePage" class="modePage" aria-label="Draw Mode workspace">
+<h4>Draw Mode</h4>
+<div class="modePageTitle"><b>Grease Pencil Drawing</b><span id="drawModeStats">—</span></div>
+<div class="drawToolGrid">
+<button data-draw-tool="draw">✎ Pencil</button>
+<button data-draw-tool="line">╱ Line</button>
+<button data-draw-tool="box">▭ Rectangle</button>
+<button data-draw-tool="oval">◯ Ellipse</button>
+<button data-draw-tool="erase">⌫ Eraser</button>
+</div>
+<h4>Brush Settings</h4>
+<div class="drawSetting"><span>Size</span><b id="drawSizeRead">4 px</b><input id="drawSize" type="range" min="1" max="60" value="4"></div>
+<div class="drawSetting"><span>Smoothing</span><b id="drawSmoothRead">2</b><input id="drawSmooth" type="range" min="0" max="6" value="2"></div>
+<div class="drawChecks"><label class="h"><input id="drawFill" type="checkbox">Fill</label><label class="h"><input id="drawAdditive" type="checkbox">Additive</label></div>
+<div class="drawAnimGrid">
+<button data-draw-action="blank">＋ Blank</button>
+<button data-draw-action="duplicate">◆ Duplicate</button>
+<button data-draw-action="hold">▮ Hold ×2</button>
+<button data-draw-action="clear">× Clear</button>
+</div>
+<div class="modePageHint">Draw Mode is the frame-by-frame drawing workspace. Pencil creates freehand strokes; shape tools create clean geometry on the active frame. Use Blank, Duplicate and Hold for traditional 2D timing.</div>
+</div>
 <div id="objectModePage" class="modePage" aria-label="Object Mode workspace">
 <h4>Object Mode</h4>
 <div class="modePageTitle"><b>Object</b><span id="objectModeState">Active</span></div>
