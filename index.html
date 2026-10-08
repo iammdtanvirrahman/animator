@@ -23,7 +23,21 @@ Drag selected cels to move   Ctrl+Z undo   Ctrl+Shift+Z redo
 Wheel zoom   Alt/Middle-drag pan   Home reset view</pre></div>
 <aside id="sd">
 <h4>Layers<span><button onclick="addL()" title="Add (Shift+A)">＋</button> <button onclick="delL()">－</button> <button onclick="mvL(1)">▲</button> <button onclick="mvL(-1)">▼</button></span></h4><div id="ll"></div>
-<h4>Transform at this frame</h4><div id="tf" class="g"></div>
+<h4>Transform at this frame</h4><div id="tf" class="g"></div><div id="objectModePage" class="modePage" aria-label="Object Mode workspace">
+<h4>Object Mode</h4>
+<div class="modePageTitle"><b>Object</b><span id="objectModeState">Active</span></div>
+<div class="objectToolGrid">
+<button data-object-tool="select">↖ Select</button>
+<button data-object-tool="move">G Move</button>
+<button data-object-tool="rotate">R Rotate</button>
+<button data-object-tool="scale">S Scale</button>
+<button data-object-tool="duplicate">Shift+D Duplicate</button>
+<button data-object-tool="delete">X Delete</button>
+</div>
+<h4>Transform</h4><div id="objectTransform" class="g"></div>
+<div class="modePageHint">Object Mode works on the complete drawing stroke. Select an object, then move, rotate or scale it without editing its points.</div>
+</div>
+
 <h4>Layer</h4><input id="ln" placeholder="Layer name">
 <div class="r"><select id="bm"><option value="source-over">Normal</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="overlay">Overlay</option><option value="lighter">Add</option></select></div>
 <div class="r"><select id="ie"><option value="ease">Ease in-out</option><option value="linear">Linear</option><option value="in">Ease in</option><option value="out">Ease out</option><option value="bounce">Bounce</option><option value="hold">Constant</option></select></div>
