@@ -33,6 +33,21 @@ Wheel zoom   Alt/Middle-drag pan   Home reset view</pre></div>
 </div>
 <div class="modePageHint">Edit Mode changes the active drawing itself. Click or drag points to reshape strokes; layer transforms remain untouched.</div>
 </div>
+<div id="sculptModePage" class="modePage" aria-label="Sculpt Mode workspace">
+<h4>Sculpt Mode</h4>
+<div class="modePageTitle"><b>Stroke Sculpting</b><span id="sculptModeStats">—</span></div>
+<div class="sculptToolGrid">
+<button data-sculpt-page="grab">✥ Grab</button>
+<button data-sculpt-page="smooth">⌁ Smooth</button>
+<button data-sculpt-page="push">↗ Push</button>
+<button data-sculpt-page="erase">⌫ Erase</button>
+</div>
+<h4>Brush</h4>
+<div class="sculptSetting"><span>Radius</span><b id="sculptRadiusRead">45 px</b><input id="sculptPageRadius" type="range" min="5" max="180" value="45"></div>
+<div class="sculptSetting"><span>Strength</span><b id="sculptStrengthRead">100%</b><input id="sculptStrength" type="range" min="0.05" max="1" step=".05" value="1"></div>
+<div class="sculptChecks"><label class="h"><input id="sculptSymmetry" type="checkbox"> X Symmetry</label></div>
+<div class="modePageHint">Sculpt Mode works directly on stroke points. Grab pulls points, Smooth relaxes the curve, Push moves points with the brush, and Erase removes points locally.</div>
+</div>
 <div id="drawModePage" class="modePage" aria-label="Draw Mode workspace">
 <h4>Draw Mode</h4>
 <div class="modePageTitle"><b>Grease Pencil Drawing</b><span id="drawModeStats">—</span></div>
