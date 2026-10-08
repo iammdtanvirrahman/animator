@@ -219,3 +219,16 @@ body.object-mode #sd>.modePage~h4:first-of-type{margin-top:10px}
 /* Edit Mode workspace */
 body.edit-mode #editModePage{display:block}
 #editModeStats{font:9px ui-monospace,monospace;color:#f0a45e}
+
+/* Draw Mode workspace — Blender Grease Pencil inspired */
+body.draw-mode #drawModePage{display:block}
+.drawToolGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px}
+.drawToolGrid button{min-height:29px;font-size:10px;padding:4px 3px}
+.drawToolGrid button.active{background:#f08018;border-color:#ff9c3a;color:#1e1f22;font-weight:700}
+.drawSetting{display:grid;grid-template-columns:auto 42px;align-items:center;gap:6px;margin:6px 0;color:#aeb0b5;font-size:10px}
+.drawSetting b{font:9px ui-monospace,monospace;color:#e0a15f;text-align:right}
+.drawSetting input[type=range]{grid-column:1 / -1;width:100%;margin-top:-2px}
+.drawChecks{display:flex;gap:10px;margin:7px 0;color:#b7b9be}
+.drawAnimGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px}
+.drawAnimGrid button{font-size:10px;padding:4px 3px}
+@media(max-width:480px){.drawToolGrid button{font-size:9px}.drawSetting{font-size:9px}.drawAnimGrid button{font-size:9px}}
