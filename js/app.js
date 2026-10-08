@@ -359,3 +359,43 @@ S.i=cl(S.i|0,0,S.l.length-1);fit();ui(1);
  document.addEventListener('pointerdown',e=>{if(open&&!pie.contains(e.target))close()});
  sync();
 })();
+
+/* Draw Mode dedicated workspace */
+(function(){
+ const page=document.getElementById('drawModePage');
+ if(!page)return;
+ const size=document.getElementById('drawSize'),smooth=document.getElementById('drawSmooth'),fill=document.getElementById('drawFill'),additive=document.getElementById('drawAdditive');
+ const sizeRead=document.getElementById('drawSizeRead'),smoothRead=document.getElementById('drawSmoothRead'),stats=document.getElementById('drawModeStats');
+ function sync(){
+   const active=window.getBlenderMode?window.getBlenderMode():'object';
+   document.body.classList.toggle('draw-mode',active==='draw');
+   const L=S.l&&S.l[S.i],D=L?dr(L,S.f):[],k=L?kf(L,S.f):null;
+   if(stats)stats.textContent=L?'F '+S.f+' · '+D.length+' stroke'+(D.length===1?'':'s')+(k==null?' · Empty':' · Drawing'):'No active layer';
+   if(sizeRead)sizeRead.textContent=(+size.value)+' px';
+   if(smoothRead)smoothRead.textContent=smooth.value;
+   if(size&&typeof sz!=='undefined'&&document.activeElement!==size)size.value=sz.value;
+   if(smooth&&typeof sm!=='undefined'&&document.activeElement!==smooth)smooth.value=sm.value;
+   if(fill&&typeof fl!=='undefined')fill.checked=fl.checked;
+   if(additive&&typeof ad!=='undefined')additive.checked=ad.checked;
+   page.querySelectorAll('[data-draw-tool]').forEach(b=>b.classList.toggle('active',b.dataset.drawTool===tool));
+ }
+ page.querySelectorAll('[data-draw-tool]').forEach(b=>b.onclick=()=>{
+   tool=b.dataset.drawTool;
+   if(tool==='draw'||tool==='line'||tool==='box'||tool==='oval'||tool==='erase')mode='object';
+   ui();msg('Draw: '+b.textContent.trim());
+ });
+ function mirrorControl(source,target){target.value=source.value;target.dispatchEvent(new Event('input',{bubbles:true}))}
+ if(size)size.oninput=()=>{mirrorControl(size,sz);sync()};
+ if(smooth)smooth.oninput=()=>{mirrorControl(smooth,sm);sync()};
+ if(fill)fill.onchange=()=>{fl.checked=fill.checked;fl.dispatchEvent(new Event('change',{bubbles:true}));sync()};
+ if(additive)additive.onchange=()=>{ad.checked=additive.checked;ad.dispatchEvent(new Event('change',{bubbles:true}));sync()};
+ page.querySelectorAll('[data-draw-action]').forEach(b=>b.onclick=()=>{
+   const a=b.dataset.drawAction;
+   if(a==='blank'&&typeof insertBlank==='function')insertBlank();
+   else if(a==='duplicate'&&typeof duplicateDrawing==='function')duplicateDrawing();
+   else if(a==='hold'&&typeof holdTwice==='function')holdTwice();
+   else if(a==='clear'&&typeof clearDrawing==='function')clearDrawing();
+ });
+ const oldUI=ui;ui=function(full){oldUI(full);sync()};
+ sync();
+})();
